@@ -7,7 +7,7 @@ from sklearn import metrics, tree
 import config
 import model_dispatcher
 
-def run(fold, model):
+def run(fold, model, save_model):
     print("Training starting...")
 
     data = pd.read_csv(config.TRAINING_FILE)
@@ -29,16 +29,18 @@ def run(fold, model):
     accuracy = metrics.accuracy_score(y_valid, y_pred)
     print(f"Fold: {fold}, Accuracy: {accuracy}")
 
-    joblib.dump(clf, os.path.join(config.MODEL_OUTPUT, f"dt_{fold}.bin"))
+    if save_model:
+        joblib.dump(clf, os.path.join(config.MODEL_OUTPUT, f"dt_{fold}.bin"))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--fold", type=int)
-    parser.add_argument("--model", type=str)
+    parser.add_argument("--fold", type=int, const=0, nargs='?')
+    parser.add_argument("--model", type=str, const='rf', nargs='?')
+    parser.add_argument("--save_model", type=str, const='false', nargs='?')
 
     args = parser.parse_args()
 
-    run(fold=args.fold, model=args.model)
+    run(fold=args.fold, model=args.model, save_model=args.save_model)
 
